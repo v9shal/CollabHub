@@ -1,36 +1,8 @@
 import prisma from "../config/prisma.js";
 import type { Request, Response } from "express";
+import {validateCollectionOwnership} from '../utils/validation.js'
 
-interface CollectionParams {
-  id: string;
-}
 
-interface CreateCollectionBody {
-  name: string;
-}
-
-interface UpdateCollectionBody {
-  name: string;
-}
-
-const validateCollectionOwnership = async (
-  collectionId: number,
-  userId: number
-) => {
-  const collection = await prisma.collection.findUnique({
-    where: { id: collectionId },
-  });
-
-  if (!collection) {
-    return { isValid: false, error: "Collection not found" };
-  }
-
-  if (collection.userId !== userId) {
-    return { isValid: false, error: "Unauthorized access" };
-  }
-
-  return { isValid: true, collection };
-};
 
 const createCollection = async (
   req: Request,
